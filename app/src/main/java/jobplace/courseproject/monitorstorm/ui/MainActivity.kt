@@ -46,18 +46,18 @@ class MainActivity : ComponentActivity() {
             StormScreen(vm)
         }
 
-        startWorker()
+      //  startWorker()
     }
 
     private fun startWorker() {
         val work = PeriodicWorkRequestBuilder<StormWorker>(
-            30, TimeUnit.MINUTES
+            15, TimeUnit.MINUTES
         ).build()
 
         WorkManager.getInstance(this)
             .enqueueUniquePeriodicWork(
                 "storm_worker",
-                ExistingPeriodicWorkPolicy.UPDATE,
+                ExistingPeriodicWorkPolicy.KEEP,
                 work
             )
     }

@@ -20,7 +20,7 @@ fun ChartView(list: List<KpEntity>) {
     AndroidView(
         modifier = Modifier
             .fillMaxWidth()
-            .height(600.dp),
+            .height(500.dp),
 
         factory = { context ->
             LineChart(context)
