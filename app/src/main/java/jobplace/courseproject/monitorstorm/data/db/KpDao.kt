@@ -14,4 +14,7 @@ interface KpDao {
 
     @Query("SELECT * FROM kp_index ORDER BY time DESC LIMIT 20")
     fun getLatest(): Flow<List<KpEntity>>
+
+    @Query("SELECT * FROM kp_index ORDER BY time DESC LIMIT 1")
+    suspend fun getLatestOne(): KpEntity?
 }
