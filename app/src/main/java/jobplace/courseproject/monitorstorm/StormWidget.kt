@@ -58,27 +58,8 @@ class StormWidget : AppWidgetProvider() {
     }
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
-        if (intent.action == ACTION_UPDATE) {
-            val manager = AppWidgetManager.getInstance(context)
-            val ids = manager.getAppWidgetIds(
-                ComponentName(context, StormWidget::class.java)
-            )
-            for (id in ids) {
-                val views = RemoteViews(context.packageName, R.layout.widget_layout)
-                views.setTextViewText(R.id.statusText, "Обновление...")
-                val intentUpdate = Intent(context, StormWidget::class.java).apply {
-                    action = ACTION_UPDATE
-                }
-                val pendingIntent = PendingIntent.getBroadcast(
-                    context,
-                    id,
-                    intentUpdate,
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                )
-                views.setOnClickPendingIntent(R.id.updateBtn, pendingIntent)
-                manager.updateAppWidget(id, views)
-            }
 
+        if (intent.action == ACTION_UPDATE) {
             val constraints = Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build()
@@ -86,6 +67,7 @@ class StormWidget : AppWidgetProvider() {
             val work = OneTimeWorkRequestBuilder<StormWorker>()
                 .setConstraints(constraints)
                 .build()
+
             WorkManager.getInstance(context).enqueue(work)
         }
     }

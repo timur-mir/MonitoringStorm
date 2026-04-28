@@ -43,8 +43,8 @@ class StormWorker(
             repo.refresh()
             val latest = dao.getLatestOne()?.value ?: 0.0
             updateWidget(applicationContext, latest)
-            if (latest > 0) {
-                showNotification("Магнитная буря", "Индекс магнитной бури = $latest")
+            if (latest > 3) {
+                showNotification("Магнитная буря", "Индекс магнитной бури = $latest",latest)
             }
             return Result.success()
         } catch (e: Exception) {
@@ -53,8 +53,11 @@ class StormWorker(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun showNotification(title: String, text: String) {
-        val intent = Intent(applicationContext, MainActivity::class.java)
+    private fun showNotification(title: String, text: String,kp:Double) {
+        val intent = Intent(applicationContext, MainActivity::class.java).apply {
+            flags=Intent.FLAG_ACTIVITY_SINGLE_TOP;
+            putExtra("kp",kp)
+        }
 
         val pendingIntent = PendingIntent.getActivity(
             applicationContext,
@@ -89,14 +92,20 @@ class StormWorker(
         val component = ComponentName(context, StormWidget::class.java)
         val ids = manager.getAppWidgetIds(component)
         val status = when {
-            kp < 4 -> "Спокойно"
-            kp < 6 -> "Умеренная буря"
+            kp < 5 -> "Спокойно"
+            kp < 6 -> "Слабая буря"
+            kp < 7 -> "Умеренная буря"
+            kp < 8 -> "Сильная буря"
+            kp < 9 -> "Экстремальная сильная буря"
             else -> "Сильная буря"
         }
         val bgRes = when {
-            kp < 4 -> R.drawable.bg_green
+            kp < 5 -> R.drawable.bg_green
             kp < 6 -> R.drawable.bg_yellow
-            else -> R.drawable.bg_red
+            kp < 7 ->R.drawable.bg_yellowtransred
+            kp < 8 ->R.drawable.bg_red
+            kp < 9 ->R.drawable.bg_reddarkness
+            else -> R.drawable.bg_magenta
         }
         val time = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
 

@@ -1,6 +1,8 @@
 package jobplace.courseproject.monitorstorm.ui
 
+import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -43,6 +45,16 @@ class MainActivity : ComponentActivity() {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     StormScreen(vm)
                 }
+            }
+        }
+    }
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+
+        intent?.let {
+            val kp = it.getDoubleExtra("kp", -1.0)
+            if (kp != -1.0) {
+                Toast.makeText(this, "Индекс магнитной бури: $kp", Toast.LENGTH_SHORT).show()
             }
         }
     }
