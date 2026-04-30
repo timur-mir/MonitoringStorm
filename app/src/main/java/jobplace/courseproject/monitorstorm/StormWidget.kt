@@ -25,31 +25,45 @@ class StormWidget : AppWidgetProvider() {
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray
     ) {
+        super.onUpdate(context, appWidgetManager, appWidgetIds)
+
         for (widgetId in appWidgetIds) {
             val views = RemoteViews(context.packageName, R.layout.widget_layout)
+
+            val intent = Intent(context, StormWidget::class.java).apply {
+                action = ACTION_UPDATE
+            }
+            val pendingIntent = PendingIntent.getBroadcast(
+                context,
+                widgetId,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+            views.setOnClickPendingIntent(R.id.updateBtn, pendingIntent)
+
             appWidgetManager.updateAppWidget(widgetId, views)
         }
-    }
-    override fun onEnabled(context: Context) {
-        super.onEnabled(context)
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
+
         val periodicWork = PeriodicWorkRequestBuilder<StormWorker>(
             15, TimeUnit.MINUTES
         )
             .setConstraints(constraints)
             .build()
+
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
             "storm_update",
-            ExistingPeriodicWorkPolicy.KEEP,
+            ExistingPeriodicWorkPolicy.UPDATE,
             periodicWork
         )
-        val oneTimeWork = OneTimeWorkRequestBuilder<StormWorker>()
-            .setConstraints(constraints)
-            .build()
+    }
+    override fun onEnabled(context: Context) {
+        super.onEnabled(context)
 
-        WorkManager.getInstance(context).enqueue(oneTimeWork)
+        val work = OneTimeWorkRequestBuilder<StormWorker>().build()
+        WorkManager.getInstance(context).enqueue(work)
     }
     override fun onDisabled(context: Context) {
         super.onDisabled(context)
