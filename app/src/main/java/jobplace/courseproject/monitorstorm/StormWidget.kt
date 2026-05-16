@@ -34,11 +34,11 @@ class StormWidget : AppWidgetProvider() {
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
-        val oneTime = OneTimeWorkRequestBuilder<StormWorker>()
+       // val oneTime = OneTimeWorkRequestBuilder<StormWorker>()
             .setConstraints(constraints)
             .build()
 
-        WorkManager.getInstance(context).enqueue(oneTime)
+        //WorkManager.getInstance(context).enqueue(oneTime)
 
         val periodic = PeriodicWorkRequestBuilder<StormWorker>(
             15, TimeUnit.MINUTES
